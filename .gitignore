@@ -4,3 +4,7 @@
 */.vscode
 */.idea
 configstore
+node_modules
+gcloud
+github-copilot
+iterm2
