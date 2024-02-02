@@ -1,0 +1,1 @@
+{"title":"ctrl + u to command + tab","rules":[{"description":"ctrl + u to command + tab","manipulators":[{"type":"basic","from":{"modifiers":{"mandatory":["left_control"]},"key_code":"u"},"to":[{"repeat":false,"key_code":"tab","modifiers":["left_gui"]}]}]}]}

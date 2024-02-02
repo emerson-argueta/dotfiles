@@ -1,0 +1,1 @@
+{"title":"command + l to ctrl + l","rules":[{"description":"command + l to ctrl + l","manipulators":[{"type":"basic","from":{"modifiers":{"mandatory":["left_gui"]},"key_code":"l"},"to":[{"repeat":false,"key_code":"l","modifiers":["left_control"]}]}]}]}

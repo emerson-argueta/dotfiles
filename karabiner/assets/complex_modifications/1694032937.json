@@ -1,0 +1,1 @@
+{"title":"command + k to ctrl + k","rules":[{"description":"command + k to ctrl + k","manipulators":[{"type":"basic","from":{"modifiers":{"mandatory":["left_gui"]},"key_code":"k"},"to":[{"repeat":false,"key_code":"k","modifiers":["left_control"]}]}]}]}

@@ -1,0 +1,1 @@
+{"title":"command + j to ctrl + j","rules":[{"description":"command + j to ctrl + j","manipulators":[{"type":"basic","from":{"modifiers":{"mandatory":["left_gui"]},"key_code":"j"},"to":[{"repeat":false,"key_code":"j","modifiers":["left_control"]}]}]}]}
