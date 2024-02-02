@@ -1,0 +1,132 @@
+{
+    "mapping": {
+        "1,99,1": [
+            "Alt_R",
+            "keyboard"
+        ],
+        "1,100,1": [
+            "KEY_LEFTCTRL",
+            "keyboard"
+        ],
+        "1,125,1": [
+            "Alt_R",
+            "keyboard"
+        ],
+        "1,56,1+1,38,1": [
+            "KEY_RIGHT",
+            "keyboard"
+        ],
+        "1,56,1+1,35,1": [
+            "KEY_LEFT",
+            "keyboard"
+        ],
+        "1,56,1+1,37,1": [
+            "KEY_UP",
+            "keyboard"
+        ],
+        "1,56,1+1,36,1": [
+            "KEY_DOWN",
+            "keyboard"
+        ],
+        "1,56,1+1,30,1": [
+            "KEY_RIGHTCTRL + a",
+            "keyboard"
+        ],
+        "1,56,1+1,22,1": [
+            "KEY_HOME",
+            "keyboard"
+        ],
+        "1,56,1+1,23,1": [
+            "KEY_END",
+            "keyboard"
+        ],
+        "1,56,1+1,46,1": [
+            "KEY_RIGHTCTRL + c",
+            "keyboard"
+        ],
+        "1,56,1+1,47,1": [
+            "KEY_RIGHTCTRL + v",
+            "keyboard"
+        ],
+        "1,100,1+1,38,1": [
+            "KEY_RIGHTCTRL + l",
+            "keyboard"
+        ],
+        "1,56,1+1,57,1": [
+            "F10",
+            "keyboard"
+        ],
+        "1,56,1+1,16,1": [
+            "Super_R + q",
+            "keyboard"
+        ],
+        "1,42,1+1,56,1+1,36,1": [
+            "Super_R + Shift_L + j",
+            "keyboard"
+        ],
+        "1,42,1+1,56,1+1,37,1": [
+            "Super_R + Shift_L + k",
+            "keyboard"
+        ],
+        "1,42,1+1,56,1+1,35,1": [
+            "Super_R + Shift_L + h",
+            "keyboard"
+        ],
+        "1,42,1+1,56,1+1,38,1": [
+            "Super_R + Shift_L + l",
+            "keyboard"
+        ],
+        "1,56,1+1,50,1": [
+            "Super_R + m",
+            "keyboard"
+        ],
+        "1,56,1+1,29,1+1,38,1": [
+            "Super_R + l",
+            "keyboard"
+        ],
+        "1,29,1+1,56,1+1,35,1": [
+            "Super_R + h",
+            "keyboard"
+        ],
+        "1,29,1+1,56,1+1,37,1": [
+            "Super_R + k",
+            "keyboard"
+        ],
+        "1,56,1+1,29,1+1,36,1": [
+            "Super_R + j",
+            "keyboard"
+        ],
+        "1,29,1+1,56,1+1,23,1": [
+            "Super_R + i",
+            "keyboard"
+        ],
+        "1,29,1+1,56,1+1,22,1": [
+            "Super_R + u",
+            "keyboard"
+        ],
+        "1,56,1+1,17,1": [
+            "KEY_RIGHTCTRL + w",
+            "keyboard"
+        ],
+        "1,56,1+1,49,1": [
+            "KEY_RIGHTCTRL + n",
+            "keyboard"
+        ],
+        "1,56,1+1,33,1": [
+            "KEY_RIGHTCTRL + f",
+            "keyboard"
+        ],
+        "1,56,1+1,12,1": [
+            "KEY_RIGHTCTRL + KEY_MINUS",
+            "keyboard"
+        ],
+        "1,56,1+1,13,1": [
+            "KEY_RIGHTCTRL + Shift_L + KEY_EQUAL",
+            "keyboard"
+        ],
+        "1,56,1+1,15,1": [
+            "Alt_R + Tab",
+            "keyboard"
+        ]
+    }
+}
