@@ -1,0 +1,3 @@
+[submodule "global/nvim"]
+	path = global/nvim
+	url = https://github.com/emerson-argueta/nvim-config.git
