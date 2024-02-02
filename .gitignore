@@ -1,0 +1,6 @@
+# ignore these folders in mac
+.DS_Store
+*/.DS_Store
+*/.vscode
+*/.idea
+configstore
