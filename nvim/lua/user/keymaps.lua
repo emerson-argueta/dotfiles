@@ -1,52 +1,377 @@
-vim.keymap.set('v', '<leader>y', '"+y', { noremap = true, silent = true })
+local nnoremap = require("user.keymap_utils").nnoremap
+local vnoremap = require("user.keymap_utils").vnoremap
+local inoremap = require("user.keymap_utils").inoremap
+local tnoremap = require("user.keymap_utils").tnoremap
+local xnoremap = require("user.keymap_utils").xnoremap
+local harpoon_ui = require("harpoon.ui")
+local harpoon_mark = require("harpoon.mark")
+local illuminate = require("illuminate")
+local utils = require("user.utils")
+
+local M = {}
+
+local TERM = os.getenv("TERM")
+
+-- Normal --
+-- Disable Space bar since it'll be used as the leader key
+nnoremap("<space>", "<nop>")
+
+-- select all shortcut
 vim.keymap.set('n', '<leader>sa', 'ggVG', { noremap = true, silent = true })
+
+-- navigate command optios with arrow keys
 vim.keymap.set('c', '<Up>', '<C-p>', { noremap = true })
 vim.keymap.set('c', '<Down>', '<C-n>', { noremap = true })
-vim.keymap.set('n', '<C-b>', ':b#<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>c', ':bd<CR>', { noremap = true, silent = true })
 
 -- Keymaps comments Ctrl-/ to toggle comments
 vim.keymap.set('n', '<C-_>', ':Commentary<CR>', { noremap = true, silent = true })
 vim.keymap.set('v', '<C-_>', ':Commentary<CR>', { noremap = true, silent = true })
 
--- Keymaps for folds
-vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
-vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+-- Swap between last two buffers
+nnoremap("<leader>'", "<C-^>", { desc = "Switch to last buffer" })
 
-local M = {}
--- LSP keymaps (exports a function to be used in ../../plugins/lsp.lua b/c we need a reference to the current buffer) --
-M.lsp_keymaps = function(bufnr)
-	-- see :help lsp-zero-keybindings
-	-- to learn the available actions
-	local opts = { buffer = bufnr, remap = false }
-	local x_ops = function(additional_opts)
-		return vim.tbl_extend("force", opts, additional_opts or {})
+nnoremap('<leader>c', ':bd<CR>')
+
+-- Save with leader key
+nnoremap("<leader>w", "<cmd>w<cr>", { silent = false })
+
+-- Quit with leader key
+nnoremap("<leader>q", "<cmd>q<cr>", { silent = false })
+
+-- Map Oil to <leader>e
+nnoremap("<leader>fe", function()
+	require("oil").toggle_float()
+end)
+nnoremap("<leader>e", ':Oil <CR>')
+
+-- Center buffer while navigating
+nnoremap("<C-u>", "<C-u>zz")
+nnoremap("<C-d>", "<C-d>zz")
+nnoremap("{", "{zz")
+nnoremap("}", "}zz")
+nnoremap("N", "Nzz")
+nnoremap("n", "nzz")
+nnoremap("G", "Gzz")
+nnoremap("gg", "ggzz")
+nnoremap("<C-i>", "<C-i>zz")
+nnoremap("<C-o>", "<C-o>zz")
+nnoremap("%", "%zz")
+nnoremap("*", "*zz")
+nnoremap("#", "#zz")
+
+-- Press 'S' for quick find/replace for the word under the cursor
+nnoremap("S", function()
+	local cmd = ":%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>"
+	local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
+	vim.api.nvim_feedkeys(keys, "n", false)
+end)
+
+-- Open Spectre for global find/replace
+nnoremap("<leader>S", function()
+	require("spectre").toggle()
+end)
+
+-- Open Spectre for global find/replace for the word under the cursor in normal mode
+-- TODO Fix, currently being overriden by Telescope
+nnoremap("<leader>sw", function()
+	require("spectre").open_visual({ select_word = true })
+end, { desc = "Search current word" })
+
+-- Press 'H', 'L' to jump to start/end of a line (first/last char)
+nnoremap("L", "$")
+nnoremap("H", "^")
+
+-- Press 'U' for redo
+nnoremap("U", "<C-r>")
+
+-- Turn off highlighted results
+nnoremap("<leader>no", "<cmd>noh<cr>")
+
+-- Diagnostics
+
+-- Goto next diagnostic of any severity
+nnoremap("]d", function()
+	vim.diagnostic.goto_next({})
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
+-- Goto previous diagnostic of any severity
+nnoremap("[d", function()
+	vim.diagnostic.goto_prev({})
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
+-- Goto next error diagnostic
+nnoremap("]e", function()
+	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
+-- Goto previous error diagnostic
+nnoremap("[e", function()
+	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
+-- Goto next warning diagnostic
+nnoremap("]w", function()
+	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
+-- Goto previous warning diagnostic
+nnoremap("[w", function()
+	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
+	vim.api.nvim_feedkeys("zz", "n", false)
+end)
+
+-- Place all dignostics into a qflist
+nnoremap("<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
+
+-- Navigate to next qflist item
+nnoremap("<leader>cn", ":cnext<cr>zz")
+
+-- Navigate to previos qflist item
+nnoremap("<leader>cp", ":cprevious<cr>zz")
+
+-- Open the qflist
+nnoremap("<leader>co", ":copen<cr>zz")
+
+-- Close the qflist
+nnoremap("<leader>cc", ":cclose<cr>zz")
+
+-- Map MaximizerToggle (szw/vim-maximizer) to leader-m
+nnoremap("<leader>m", ":MaximizerToggle<cr>")
+
+-- Resize split windows to be equal size
+nnoremap("<leader>=", "<C-w>=")
+
+-- Press leader rw to rotate open windows
+nnoremap("<leader>rw", ":RotateWindows<cr>", { desc = "[R]otate [W]indows" })
+
+-- Press gx to open the link under the cursor
+nnoremap("gx", ":sil !open <cWORD><cr>", { silent = true })
+
+-- TSC autocommand keybind to run TypeScripts tsc
+nnoremap("<leader>tc", ":TSC<cr>", { desc = "[T]ypeScript [C]ompile" })
+
+-- Harpoon keybinds --
+-- Open harpoon ui
+nnoremap("<leader>ho", function()
+	harpoon_ui.toggle_quick_menu()
+end)
+
+-- Add current file to harpoon
+nnoremap("<leader>ha", function()
+	harpoon_mark.add_file()
+end)
+
+-- Remove current file from harpoon
+nnoremap("<leader>hr", function()
+	harpoon_mark.rm_file()
+end)
+
+-- Remove all files from harpoon
+nnoremap("<leader>hc", function()
+	harpoon_mark.clear_all()
+end)
+
+-- Quickly jump to harpooned files
+nnoremap("<leader>1", function()
+	harpoon_ui.nav_file(1)
+end)
+
+nnoremap("<leader>2", function()
+	harpoon_ui.nav_file(2)
+end)
+
+nnoremap("<leader>3", function()
+	harpoon_ui.nav_file(3)
+end)
+
+nnoremap("<leader>4", function()
+	harpoon_ui.nav_file(4)
+end)
+
+nnoremap("<leader>5", function()
+	harpoon_ui.nav_file(5)
+end)
+
+-- Git keymaps --
+nnoremap("<leader>gb", ":Gitsigns toggle_current_line_blame<cr>")
+nnoremap("<leader>gf", function()
+	local cmd = {
+		"sort",
+		"-u",
+		"<(git diff --name-only --cached)",
+		"<(git diff --name-only)",
+		"<(git diff --name-only --diff-filter=U)",
+	}
+
+	if not utils.is_git_directory() then
+		vim.notify(
+			"Current project is not a git directory",
+			vim.log.levels.WARN,
+			{ title = "Telescope Git Files", git_command = cmd }
+		)
+	else
+		require("telescope.builtin").git_files()
 	end
-	vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end,
-		x_ops({ desc = "LSP: [R]ename" }))
-	vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end,
-		x_ops({ desc = "LSP: [V]iew [C]ode [A]ctions" }))
-	vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end,
-		x_ops({ desc = "LSP: [G]oto [D]efinition" }))
-	vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references,
-		x_ops({ desc = "LSP: [G]oto [R]eferences" }))
-	vim.keymap.set("n", "gi", require('telescope.builtin').lsp_implementations,
-		x_ops({ desc = "LSP: [G]oto [I]mplementation" }))
-	vim.keymap.set("n", "<leader>bs", require('telescope.builtin').lsp_document_symbols,
-		x_ops({ desc = "LSP: [B]uffer [S]ymbols" }))
-	vim.keymap.set("n", "<leader>ps", require('telescope.builtin').lsp_workspace_symbols,
-		x_ops({ desc = "LSP: [P]roject [S]ymbols" }))
-	vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end,
-		x_ops({ desc = "LSP: Hover Documentation" }))
-	vim.keymap.set("n", "<leader>k", function() vim.lsp.buf.signature_help() end,
-		x_ops({ desc = "LSP: Signature Documentation" }))
-	vim.keymap.set("i", "<C-k>", function() vim.lsp.buf.signature_help() end,
-		x_ops({ desc = "LSP: Signature Documentation" }))
-	vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-	vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-	vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
+end, { desc = "Search [G]it [F]iles" })
+
+-- Telescope keybinds --
+nnoremap("<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
+nnoremap("<leader>fb", require("telescope.builtin").buffers, { desc = "[F]ind Open [B]uffers" })
+nnoremap("<leader>ff", function()
+	require("telescope.builtin").find_files({ hidden = true })
+end, { desc = "[S]earch [F]iles" })
+nnoremap("<leader>fh", require("telescope.builtin").help_tags, { desc = "[F]ind [H]elp" })
+nnoremap("<leader>fg", require("telescope.builtin").live_grep, { desc = "[F]ind by [G]rep" })
+nnoremap('<leader>fgs', require("telescope.builtin").git_status, { desc = '[F]ind [G]it [S]status' })
+
+nnoremap("<leader>fc", function()
+	require("telescope.builtin").commands(require("telescope.themes").get_dropdown({
+		previewer = false,
+	}))
+end, { desc = "[F]ind [C]ommands" })
+
+nnoremap("<leader>/", function()
+	require("telescope.builtin").current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+		previewer = false,
+	}))
+end, { desc = "[/] Fuzzily search in current buffer]" })
+
+nnoremap("<leader>ss", function()
+	require("telescope.builtin").spell_suggest(require("telescope.themes").get_dropdown({
+		previewer = false,
+	}))
+end, { desc = "[S]earch [S]pelling suggestions" })
+
+-- LSP Keybinds (exports a function to be used in ../../after/plugin/lsp.lua b/c we need a reference to the current buffer) --
+M.map_lsp_keybinds = function(buffer_number)
+	nnoremap("<leader>rn", vim.lsp.buf.rename, { desc = "LSP: [R]e[n]ame", buffer = buffer_number })
+	nnoremap("<leader>ca", vim.lsp.buf.code_action, { desc = "LSP: [C]ode [A]ction", buffer = buffer_number })
+	nnoremap("gd", vim.lsp.buf.definition, { desc = "LSP: [G]oto [D]efinition", buffer = buffer_number })
+	-- Telescope LSP keybinds --
+	nnoremap(
+		"gr",
+		require("telescope.builtin").lsp_references,
+		{ desc = "LSP: [G]oto [R]eferences", buffer = buffer_number }
+	)
+	nnoremap(
+		"gi",
+		require("telescope.builtin").lsp_implementations,
+		{ desc = "LSP: [G]oto [I]mplementation", buffer = buffer_number }
+	)
+	nnoremap(
+		"<leader>bs",
+		require("telescope.builtin").lsp_document_symbols,
+		{ desc = "LSP: [B]uffer [S]ymbols", buffer = buffer_number }
+	)
+	nnoremap(
+		"<leader>ps",
+		require("telescope.builtin").lsp_workspace_symbols,
+		{ desc = "LSP: [P]roject [S]ymbols", buffer = buffer_number }
+	)
+	-- See `:help K` for why this keymap
+	nnoremap("K", vim.lsp.buf.hover, { desc = "LSP: Hover Documentation", buffer = buffer_number })
+	nnoremap("<leader>k", vim.lsp.buf.signature_help, { desc = "LSP: Signature Documentation", buffer = buffer_number })
+	inoremap("<C-k>", vim.lsp.buf.signature_help, { desc = "LSP: Signature Documentation", buffer = buffer_number })
+	-- Lesser used LSP functionality
+	nnoremap("gD", vim.lsp.buf.declaration, { desc = "LSP: [G]oto [D]eclaration", buffer = buffer_number })
+	nnoremap("td", vim.lsp.buf.type_definition, { desc = "LSP: [T]ype [D]efinition", buffer = buffer_number })
 end
-vim.keymap.set('n', '<leader>af', ':LspZeroFormat<CR>', { noremap = true, silent = true })
+nnoremap('<leader>af', ':LspZeroFormat<CR>')
+
+-- Symbol Outline keybind
+nnoremap("<leader>so", ":SymbolsOutline<cr>")
+
+-- Vim Illuminate keybinds
+nnoremap("<leader>]", function()
+	illuminate.goto_next_reference()
+	vim.api.nvim_feedkeys("zz", "n", false)
+end, { desc = "Illuminate: Goto next reference" })
+
+nnoremap("<leader>[", function()
+	illuminate.goto_prev_reference()
+	vim.api.nvim_feedkeys("zz", "n", false)
+end, { desc = "Illuminate: Goto previous reference" })
+
+-- Open Copilot panel
+nnoremap("<leader>oc", function()
+	require("copilot.panel").open({})
+end, { desc = "[O]pen [C]opilot panel" })
+
+-- nvim-ufo keybinds
+nnoremap("zR", require("ufo").openAllFolds)
+nnoremap("zM", require("ufo").closeAllFolds)
+
+-- Insert --
+-- Map jj to <esc>
+inoremap("jj", "<esc>")
+
+-- Visual --
+-- Disable Space bar since it'll be used as the leader key
+vnoremap("<space>", "<nop>")
+
+-- Press 'H', 'L' to jump to start/end of a line (first/last char)
+vnoremap("L", "$<left>")
+vnoremap("H", "^")
+
+xnoremap("<leader>p", '"_dP')
+-- Paste without losing the contents of the register
+xnoremap("<leader>p", '"_dP')
+
+-- Move selected text up/down in visual mode
+vnoremap("<A-j>", ":m '>+1<CR>gv=gv")
+vnoremap("<A-k>", ":m '<-2<CR>gv=gv")
+
+-- Reselect the last visual selection
+xnoremap("<<", function()
+	vim.cmd("normal! <<")
+	vim.cmd("normal! gv")
+end)
+
+xnoremap(">>", function()
+	vim.cmd("normal! >>")
+	vim.cmd("normal! gv")
+end)
+
+-- Terminal --
+-- Enter normal mode while in a terminal
+tnoremap("<esc>", [[<C-\><C-n>]])
+tnoremap("jj", [[<C-\><C-n>]])
+
+-- Window navigation from terminal
+tnoremap("<C-h>", [[<Cmd>wincmd h<CR>]])
+tnoremap("<C-j>", [[<Cmd>wincmd j<CR>]])
+tnoremap("<C-k>", [[<Cmd>wincmd k<CR>]])
+tnoremap("<C-l>", [[<Cmd>wincmd l<CR>]])
+
+-- Reenable default <space> functionality to prevent input delay
+tnoremap("<space>", "<space>")
+
+-- Ruby on Rails keybinds
+nnoremap("<Leader>fr", ":lua require('ror.commands').list_commands()<CR>", { silent = true })
+local function insert_erb_tag(tag_type)
+    local tag = ""
+    if tag_type == "output" then
+        tag = "<%=  %>"
+    elseif tag_type == "execution" then
+        tag = "<%  %>"
+    elseif tag_type == "execution_trim" then
+        tag = "<%-  %>"
+    end
+    vim.api.nvim_put({tag}, 'c', true, true)
+    -- Move cursor inside the brackets
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Left><Left><Left>', true, false, true), 'n', true)
+end
+-- Make the function globally accessible
+_G.insert_erb_tag = insert_erb_tag
+nnoremap('<leader><', ':lua insert_erb_tag("output")<CR>', { noremap = true, silent = true })
+nnoremap('<leader>>', ':lua insert_erb_tag("execution")<CR>', { noremap = true, silent = true })
+nnoremap('<leader>,', ':lua insert_erb_tag("execution_trim")<CR>', { noremap = true, silent = true })
+
 
 -- Git keymaps (exports a function to be used in ../../plugins/git.lua b/c we need a reference to the current buffer) --
 M.git_keymaps = function(bufnr)
@@ -101,60 +426,5 @@ _G.commit_and_push = commit_and_push
 vim.keymap.set('n', '<leader>gp', ':lua commit_and_push()<CR>', { noremap = true, silent = true })
 -- remap :G to alt-g:
 vim.keymap.set('n', '<leader>gg', ':G<CR>', { noremap = true, silent = true })
-
--- File explorer keymaps
-local function oil_toggle_float()
-	require("oil").toggle_float()
-end
-_G.oil_toggle_float = oil_toggle_float
-vim.keymap.set('n', "<leader>fe", ':lua oil_toggle_float()<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', "<leader>pv", ':Oil <CR>', { noremap = true, silent = true })
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>?', builtin.oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader>/', function()
-	-- You can pass additional configuration to telescope to change theme, layout, etc.
-	builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-		previewer = false,
-	})
-end, { desc = '[/] Fuzzily search in current buffer]' })
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
-vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-vim.keymap.set('n', '<leader>fgs', builtin.git_status, { desc = '' })
-
--- Debugging keymaps
-vim.keymap.set('n', '<leader>dt', '<cmd>lua require("dapui").toggle()<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>dc', '<cmd>lua require"dap".continue()<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>b', '<cmd>lua require"dap".toggle_breakpoint()<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>i', '<cmd>lua require"dap".step_into()<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>n', '<cmd>lua require"dap".step_over()<CR>', { noremap = true, silent = true })
-
-
--- Ruby on Rails keymaps
--- This "list_commands()" will show a list of all the available commands to run
-vim.keymap.set("n", "<Leader>fr", ":lua require('ror.commands').list_commands()<CR>", { silent = true })
--- Function to insert ERB tags
-local function insert_erb_tag(tag_type)
-    local tag = ""
-    if tag_type == "output" then
-        tag = "<%=  %>"
-    elseif tag_type == "execution" then
-        tag = "<%  %>"
-    elseif tag_type == "execution_trim" then
-        tag = "<%-  %>"
-    end
-    vim.api.nvim_put({tag}, 'c', true, true)
-    -- Move cursor inside the brackets
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Left><Left><Left>', true, false, true), 'n', true)
-end
--- Make the function globally accessible
-_G.insert_erb_tag = insert_erb_tag
--- Map the function to different keybindings
-vim.keymap.set('n', '<leader><', ':lua insert_erb_tag("output")<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>>', ':lua insert_erb_tag("execution")<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>,', ':lua insert_erb_tag("execution_trim")<CR>', { noremap = true, silent = true })
-
 
 return M

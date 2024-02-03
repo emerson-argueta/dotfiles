@@ -6,8 +6,6 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 return {
-	{ 'tpope/vim-surround' },
-	{'tpope/vim-commentary'},
 	{
 		"stevearc/oil.nvim",
 		opts = {},
@@ -36,5 +34,4 @@ return {
 			})
 		end,
 	},
-
 }
