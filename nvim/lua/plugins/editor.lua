@@ -1,5 +1,13 @@
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "oil",
+	callback = function()
+		vim.opt_local.colorcolumn = ""
+	end,
+})
+
 return {
 	{ 'tpope/vim-surround' },
+	{'tpope/vim-commentary'},
 	{
 		"stevearc/oil.nvim",
 		opts = {},
