@@ -31,6 +31,9 @@ return {
 					["g."] = "actions.toggle_hidden",
 				},
 				use_default_keymaps = false,
+        view_options = {
+          show_hidden = true
+        }
 			})
 		end,
 	},

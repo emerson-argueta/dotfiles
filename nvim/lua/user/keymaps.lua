@@ -15,35 +15,27 @@ local TERM = os.getenv("TERM")
 -- Normal --
 -- Disable Space bar since it'll be used as the leader key
 nnoremap("<space>", "<nop>")
-
 -- select all shortcut
 vim.keymap.set('n', '<leader>sa', 'ggVG', { noremap = true, silent = true })
-
+vim.keymap.set('v', '<leader>y', '"+y', { noremap = true, silent = true })
 -- navigate command optios with arrow keys
 vim.keymap.set('c', '<Up>', '<C-p>', { noremap = true })
 vim.keymap.set('c', '<Down>', '<C-n>', { noremap = true })
-
 -- Keymaps comments Ctrl-/ to toggle comments
 vim.keymap.set('n', '<C-_>', ':Commentary<CR>', { noremap = true, silent = true })
 vim.keymap.set('v', '<C-_>', ':Commentary<CR>', { noremap = true, silent = true })
-
 -- Swap between last two buffers
 nnoremap("<leader>'", "<C-^>", { desc = "Switch to last buffer" })
-
 nnoremap('<leader>c', ':bd<CR>')
-
 -- Save with leader key
 nnoremap("<leader>w", "<cmd>w<cr>", { silent = false })
-
 -- Quit with leader key
 nnoremap("<leader>q", "<cmd>q<cr>", { silent = false })
-
 -- Map Oil to <leader>e
 nnoremap("<leader>fe", function()
 	require("oil").toggle_float()
 end)
 nnoremap("<leader>e", ':Oil <CR>')
-
 -- Center buffer while navigating
 nnoremap("<C-u>", "<C-u>zz")
 nnoremap("<C-d>", "<C-d>zz")
@@ -58,67 +50,54 @@ nnoremap("<C-o>", "<C-o>zz")
 nnoremap("%", "%zz")
 nnoremap("*", "*zz")
 nnoremap("#", "#zz")
-
 -- Press 'S' for quick find/replace for the word under the cursor
 nnoremap("S", function()
 	local cmd = ":%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>"
 	local keys = vim.api.nvim_replace_termcodes(cmd, true, false, true)
 	vim.api.nvim_feedkeys(keys, "n", false)
 end)
-
 -- Open Spectre for global find/replace
 nnoremap("<leader>S", function()
 	require("spectre").toggle()
 end)
-
 -- Open Spectre for global find/replace for the word under the cursor in normal mode
 -- TODO Fix, currently being overriden by Telescope
 nnoremap("<leader>sw", function()
 	require("spectre").open_visual({ select_word = true })
 end, { desc = "Search current word" })
-
 -- Press 'H', 'L' to jump to start/end of a line (first/last char)
 nnoremap("L", "$")
 nnoremap("H", "^")
-
 -- Press 'U' for redo
 nnoremap("U", "<C-r>")
-
 -- Turn off highlighted results
 nnoremap("<leader>no", "<cmd>noh<cr>")
-
 -- Diagnostics
-
 -- Goto next diagnostic of any severity
 nnoremap("]d", function()
 	vim.diagnostic.goto_next({})
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
-
 -- Goto previous diagnostic of any severity
 nnoremap("[d", function()
 	vim.diagnostic.goto_prev({})
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
-
 -- Goto next error diagnostic
 nnoremap("]e", function()
 	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
-
 -- Goto previous error diagnostic
 nnoremap("[e", function()
 	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
-
 -- Goto next warning diagnostic
 nnoremap("]w", function()
 	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
-
 -- Goto previous warning diagnostic
 nnoremap("[w", function()
 	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
@@ -127,76 +106,55 @@ end)
 
 -- Place all dignostics into a qflist
 nnoremap("<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
-
 -- Navigate to next qflist item
 nnoremap("<leader>cn", ":cnext<cr>zz")
-
 -- Navigate to previos qflist item
 nnoremap("<leader>cp", ":cprevious<cr>zz")
-
 -- Open the qflist
 nnoremap("<leader>co", ":copen<cr>zz")
-
 -- Close the qflist
 nnoremap("<leader>cc", ":cclose<cr>zz")
-
 -- Map MaximizerToggle (szw/vim-maximizer) to leader-m
 nnoremap("<leader>m", ":MaximizerToggle<cr>")
-
 -- Resize split windows to be equal size
 nnoremap("<leader>=", "<C-w>=")
-
 -- Press leader rw to rotate open windows
 nnoremap("<leader>rw", ":RotateWindows<cr>", { desc = "[R]otate [W]indows" })
-
 -- Press gx to open the link under the cursor
 nnoremap("gx", ":sil !open <cWORD><cr>", { silent = true })
-
--- TSC autocommand keybind to run TypeScripts tsc
-nnoremap("<leader>tc", ":TSC<cr>", { desc = "[T]ypeScript [C]ompile" })
-
 -- Harpoon keybinds --
 -- Open harpoon ui
 nnoremap("<leader>ho", function()
 	harpoon_ui.toggle_quick_menu()
 end)
-
 -- Add current file to harpoon
 nnoremap("<leader>ha", function()
 	harpoon_mark.add_file()
 end)
-
 -- Remove current file from harpoon
 nnoremap("<leader>hr", function()
 	harpoon_mark.rm_file()
 end)
-
 -- Remove all files from harpoon
 nnoremap("<leader>hc", function()
 	harpoon_mark.clear_all()
 end)
-
 -- Quickly jump to harpooned files
 nnoremap("<leader>1", function()
 	harpoon_ui.nav_file(1)
 end)
-
 nnoremap("<leader>2", function()
 	harpoon_ui.nav_file(2)
 end)
-
 nnoremap("<leader>3", function()
 	harpoon_ui.nav_file(3)
 end)
-
 nnoremap("<leader>4", function()
 	harpoon_ui.nav_file(4)
 end)
-
 nnoremap("<leader>5", function()
 	harpoon_ui.nav_file(5)
 end)
-
 -- Git keymaps --
 nnoremap("<leader>gb", ":Gitsigns toggle_current_line_blame<cr>")
 nnoremap("<leader>gf", function()
@@ -306,10 +264,6 @@ end, { desc = "[O]pen [C]opilot panel" })
 nnoremap("zR", require("ufo").openAllFolds)
 nnoremap("zM", require("ufo").closeAllFolds)
 
--- Insert --
--- Map jj to <esc>
-inoremap("jj", "<esc>")
-
 -- Visual --
 -- Disable Space bar since it'll be used as the leader key
 vnoremap("<space>", "<nop>")
@@ -317,10 +271,6 @@ vnoremap("<space>", "<nop>")
 -- Press 'H', 'L' to jump to start/end of a line (first/last char)
 vnoremap("L", "$<left>")
 vnoremap("H", "^")
-
-xnoremap("<leader>p", '"_dP')
--- Paste without losing the contents of the register
-xnoremap("<leader>p", '"_dP')
 
 -- Move selected text up/down in visual mode
 vnoremap("<A-j>", ":m '>+1<CR>gv=gv")
@@ -336,20 +286,6 @@ xnoremap(">>", function()
 	vim.cmd("normal! >>")
 	vim.cmd("normal! gv")
 end)
-
--- Terminal --
--- Enter normal mode while in a terminal
-tnoremap("<esc>", [[<C-\><C-n>]])
-tnoremap("jj", [[<C-\><C-n>]])
-
--- Window navigation from terminal
-tnoremap("<C-h>", [[<Cmd>wincmd h<CR>]])
-tnoremap("<C-j>", [[<Cmd>wincmd j<CR>]])
-tnoremap("<C-k>", [[<Cmd>wincmd k<CR>]])
-tnoremap("<C-l>", [[<Cmd>wincmd l<CR>]])
-
--- Reenable default <space> functionality to prevent input delay
-tnoremap("<space>", "<space>")
 
 -- Ruby on Rails keybinds
 nnoremap("<Leader>fr", ":lua require('ror.commands').list_commands()<CR>", { silent = true })
