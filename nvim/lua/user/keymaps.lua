@@ -363,4 +363,12 @@ vim.keymap.set('n', '<leader>gp', ':lua commit_and_push()<CR>', { noremap = true
 -- remap :G to alt-g:
 vim.keymap.set('n', '<leader>gg', ':G<CR>', { noremap = true, silent = true })
 
+-- Debugging keymaps
+vim.keymap.set('n', '<leader>dt', '<cmd>lua require("dapui").toggle()<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>dc', '<cmd>lua require"dap".continue()<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>b', '<cmd>lua require"dap".toggle_breakpoint()<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>i', '<cmd>lua require"dap".step_into()<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>n', '<cmd>lua require"dap".step_over()<CR>', { noremap = true, silent = true })
+
+
 return M
