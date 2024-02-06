@@ -99,10 +99,10 @@ nnoremap("]w", function()
 	vim.api.nvim_feedkeys("zz", "n", false)
 end)
 -- Goto previous warning diagnostic
-nnoremap("[w", function()
-	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
-	vim.api.nvim_feedkeys("zz", "n", false)
-end)
+  nnoremap("[w", function()
+    vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
+    vim.api.nvim_feedkeys("zz", "n", false)
+  end)
 
 -- Place all dignostics into a qflist
 nnoremap("<leader>ld", vim.diagnostic.setqflist, { desc = "Quickfix [L]ist [D]iagnostics" })
@@ -369,6 +369,9 @@ vim.keymap.set('n', '<leader>dc', '<cmd>lua require"dap".continue()<CR>', { nore
 vim.keymap.set('n', '<leader>b', '<cmd>lua require"dap".toggle_breakpoint()<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>i', '<cmd>lua require"dap".step_into()<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>n', '<cmd>lua require"dap".step_over()<CR>', { noremap = true, silent = true })
+-- Sneak keymaps
+vim.api.nvim_set_keymap('n', 'f', '<Plug>Sneak_s', {silent = true})
+vim.api.nvim_set_keymap('n', 'F', '<Plug>Sneak_S', {silent = true})
 
 
 return M
