@@ -46,7 +46,6 @@ return {
           "templ",
           "tsserver",
           "lua_ls",
-          "sqlls",
           "htmx",
         },
         handlers = {
@@ -59,11 +58,11 @@ return {
 
       cmp.setup({
         sources = {
-          { name = 'path' },
-          { name = 'nvim_lsp' },
-          { name = 'nvim_lua' },
-          { name = 'luasnip', keyword_length = 2 },
-          { name = 'buffer',  keyword_length = 3 },
+          { name = "nvim_lsp", priority = 1000 },
+          { name = "luasnip", priority = 750 },
+          { name = "buffer", priority = 500 },
+          { name = "path", priority = 250 },
+          { name = "vim-dadbod-completion", priority = 700 }, -- add new source
         },
         formatting = lsp_zero.cmp_format(),
         mapping = cmp.mapping.preset.insert({
