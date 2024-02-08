@@ -3,6 +3,10 @@ return {
     "catppuccin/nvim",
     config = function()
       require("catppuccin").setup({
+        background = { -- :h background
+          light = "latte",
+          dark = "macchiato",
+        },
         color_overrides = {
           latte = {
             rosewater = "#A0A0A0",
@@ -33,6 +37,34 @@ return {
             crust = "#DFDFDF",
 
           },
+          macchiato = {
+            rosewater = '#dfdfdf',
+            flamingo = '#cecece',
+            pink = '#cbcbcb',
+            mauve = '#aeaeae',
+            red = '#9d9d9d',
+            maroon = '#ababab',
+            peach = '#b6b6b6',
+            yellow = '#d5d5d5',
+            green = '#c9c9c9',
+            teal = '#c4c4c4',
+            sky = '#c8c8c8',
+            sapphire = '#b7b7b7',
+            blue = '#aaaaaa',
+            lavender = '#bfbfbf',
+            text = '#d3d3d3',
+            subtext1 = '#c0c0c0',
+            subtext0 = '#adadad',
+            overlay2 = '#9a9a9a',
+            overlay1 = '#878787',
+            overlay0 = '#737373',
+            surface2 = '#606060',
+            surface1 = '#4d4d4d',
+            surface0 = '#3a3a3a',
+            base = '#272727',
+            mantle = '#202020',
+            crust = '#191919'
+          },
         },
         integrations = {
           cmp = true,
@@ -56,8 +88,8 @@ return {
         },
       })
 
-      vim.cmd.colorscheme("catppuccin-latte")
-
+      vim.cmd.colorscheme('catppuccin')
+      vim.cmd('set background=light')
       -- Hide all semantic highlights until upstream issues are resolved (https://github.com/catppuccin/nvim/issues/480)
       for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
         vim.api.nvim_set_hl(0, group, {})

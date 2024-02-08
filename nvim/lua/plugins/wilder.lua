@@ -12,11 +12,17 @@ return {
 		config = function()
 			local wilder = require("wilder")
 
-			-- -- Create a highlight group for the popup menu
+			local palette = require("catppuccin.palettes").get_palette("macchiato")
+      local cur_colorscheme = vim.g.colors_name
+      if cur_colorscheme == 'catppuccin-latte' then
+        palette = require("catppuccin.palettes").get_palette("latte")
+      end
+
+			-- Create a highlight group for the popup menu
 			local text_highlight =
-				wilder.make_hl("WilderText", { { a = 1 }, { a = 1 }, { foreground = '#222222' } })
+				wilder.make_hl("WilderText", { { a = 1 }, { a = 1 }, { foreground = palette.text } })
 			local mauve_highlight =
-				wilder.make_hl("WilderMauve", { { a = 1 }, { a = 1 }, { foreground = "#222222" } })
+				wilder.make_hl("WilderMauve", { { a = 1 }, { a = 1 }, { foreground = palette.mauve } })
 
 			-- Enable wilder when pressing :, / or ?
 			wilder.setup({ modes = { ":", "/", "?" } })
