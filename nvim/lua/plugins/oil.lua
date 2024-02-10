@@ -10,7 +10,14 @@ return {
     "stevearc/oil.nvim",
     opts = {},
     -- Optional dependencies
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+      config = function()
+        require('nvim-web-devicons').setup({
+          color_icons = false,
+        })
+      end
+    },
     config = function()
       local oil = require('oil')
       -- Define function to toggle special files display
@@ -30,12 +37,12 @@ return {
           return
         end
 
-          oil.set_columns({
-            "icon",
-            "permissions",
-            "size",
-            "mtime",
-          })
+        oil.set_columns({
+          "icon",
+          "permissions",
+          "size",
+          "mtime",
+        })
       end
 
       -- Map command to toggle file info
