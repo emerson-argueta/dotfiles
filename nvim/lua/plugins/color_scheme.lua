@@ -1,5 +1,8 @@
 return {
   {
+    "emerson-argueta/komau.vim",
+  },
+  {
     "catppuccin/nvim",
     config = function()
       require("catppuccin").setup({
@@ -8,6 +11,9 @@ return {
           dark = "macchiato",
         },
         color_overrides = {
+          mocha = {
+            base = '#282828',
+          },
           latte = {
             rosewater = "#A0A0A0",
             flamingo = "#969696",
@@ -61,7 +67,7 @@ return {
             surface2 = '#606060',
             surface1 = '#4d4d4d',
             surface0 = '#3a3a3a',
-            base = '#272727',
+            base = '#282828',
             mantle = '#202020',
             crust = '#191919'
           },

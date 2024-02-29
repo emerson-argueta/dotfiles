@@ -12,10 +12,10 @@ return {
 		config = function()
 			local wilder = require("wilder")
 
-			local palette = require("catppuccin.palettes").get_palette("macchiato")
-      local cur_colorscheme = vim.g.colors_name
-      if cur_colorscheme == 'catppuccin-latte' then
-        palette = require("catppuccin.palettes").get_palette("latte")
+			local palette = require("catppuccin.palettes").get_palette("latte")
+      local cur_bg = vim.o.background
+      if cur_bg == 'dark' then
+        palette = require("catppuccin.palettes").get_palette("macchiato")
       end
 
 			-- Create a highlight group for the popup menu

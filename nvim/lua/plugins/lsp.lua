@@ -58,10 +58,10 @@ return {
 
       cmp.setup({
         sources = {
-          { name = "nvim_lsp", priority = 1000 },
-          { name = "luasnip", priority = 750 },
-          { name = "buffer", priority = 500 },
-          { name = "path", priority = 250 },
+          { name = "nvim_lsp",              priority = 1000 },
+          { name = "luasnip",               priority = 750 },
+          { name = "buffer",                priority = 500 },
+          { name = "path",                  priority = 250 },
           { name = "vim-dadbod-completion", priority = 700 }, -- add new source
         },
         formatting = lsp_zero.cmp_format(),
@@ -76,6 +76,8 @@ return {
       -- Option 2: nvim lsp as LSP client
       -- Tell the server the capability of foldingRange,
       -- Neovim hasn't added foldingRange to default capabilities, users must add it manually
+      vim.filetype.add({ extension = { templ = "templ" } })
+
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities.textDocument.foldingRange = {
         dynamicRegistration = false,
@@ -97,6 +99,42 @@ return {
       lspconfig.html.setup {
         filetypes = { "html", "eruby" }
       }
+      lspconfig.templ.setup {
+        filetypes = { "templ" }
+      }
+      lspconfig.html.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+        filetypes = { "html", "templ" },
+      })
+      lspconfig.htmx.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+        filetypes = { "html", "templ" },
+      })
+      lspconfig.tailwindcss.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+        filetypes = { "templ", "astro", "javascript", "typescript", "react" },
+        init_options = { userLanguages = { templ = "html" } },
+      })
+
+      local templ_format = function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        local filename = vim.api.nvim_buf_get_name(bufnr)
+        local cmd = "templ fmt " .. vim.fn.shellescape(filename)
+
+        vim.fn.jobstart(cmd, {
+          on_exit = function()
+            -- Reload the buffer only if it's still the current buffer
+            if vim.api.nvim_get_current_buf() == bufnr then
+              vim.cmd('e!')
+            end
+          end,
+        })
+      end
+      vim.api.nvim_create_autocmd({ "BufWritePre" }, { pattern = { "*.templ" }, callback = templ_format })
+
       -- Configure borderd for LspInfo ui
       require("lspconfig.ui.windows").default_options.border = "rounded"
 

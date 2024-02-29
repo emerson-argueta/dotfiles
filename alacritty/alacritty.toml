@@ -1,0 +1,22 @@
+[window]
+decorations = "Buttonless"
+startup_mode = "Maximized"
+
+[font]
+size=16
+normal.family = "Iosevka Nerd Font Mono"
+normal.style = "Medium"
+
+[colors.primary]
+foreground="#e8e8e8"
+background="#282828"
+
+[colors.normal]
+black = "#181818"
+red = "#626262"
+green = "#999999"
+yellow = "#c7c7c7"
+blue = "#929292"
+magenta = "#8a8a8a"
+cyan = "#a1a1a1"
+white = "#d8d8d8"
