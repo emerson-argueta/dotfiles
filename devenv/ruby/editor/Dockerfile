@@ -79,6 +79,8 @@ RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerleve
     echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc
 # --- End Powerlevel10k Installation ---
 
+RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 # Configure Git with a default user name and email
 # You can change these values after connecting to the container if needed.
 RUN git config --global user.name "Your Name" && \
