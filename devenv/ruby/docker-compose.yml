@@ -1,0 +1,82 @@
+# Define the services for your development environment
+services:
+  # PostgreSQL Database Service
+  db_postgres:
+    # Use the official PostgreSQL 15 Alpine image for a lightweight footprint
+    image: postgres:15-alpine
+    # Restart the container automatically unless it's explicitly stopped
+    restart: unless-stopped
+    volumes:
+      # Persistent volume for PostgreSQL data, so your data isn't lost if the container is removed
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      # Set PostgreSQL user, password, and database name
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: myapp_development
+    ports:
+      # Optional: Expose PostgreSQL port to the host for direct access (e.g., using a GUI client)
+      - "5432:5432"
+    networks:
+      - dev_network
+
+  # MySQL Database Service
+  db_mysql:
+    # Use the official MySQL 8.0 image
+    image: mysql:8.0
+    # Restart the container automatically unless it's explicitly stopped
+    restart: unless-stopped
+    volumes:
+      # Persistent volume for MySQL data
+      - mysql_data:/var/lib/mysql
+    environment:
+      # Set MySQL root password, database name, user, and password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: my_mysql_database_development
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      # Optional: Expose MySQL port to the host for direct access
+      - "3306:3306"
+    networks:
+      - dev_network
+
+  # Editor Service with Development Tools (Neovim, Git, Tmux, etc.)
+  editor:
+    # Build the editor image using the Dockerfile in ./editor
+    build:
+      context: ~/development/dotfiles/devenv/ruby/editor
+      dockerfile: Dockerfile
+    volumes:
+      # Mount the Rails application directory, allowing you to edit the code from within the editor container
+      - .:/root/app
+      # Persistent volume for editor dotfiles (e.g., Neovim config, .zshrc, .p10k.zsh).
+      # This ensures your editor configuration persists across container restarts.
+      - ~/development/dotfiles:/root/.config
+    # Keep stdin open and allocate a TTY, crucial for an interactive shell experience
+    stdin_open: true # Equivalent to `docker run -i`
+    tty: true        # Equivalent to `docker run -t`
+    # Map container port 3000 to host port 3000, allowing you to access Rails via http://localhost:3000
+    ports:
+      - "3000:3000"
+      # Ensure database services are started before the editor service, as Rails will need them.
+    depends_on:
+      - db_postgres
+      - db_mysql
+    # Set the default command to start zsh, providing an interactive terminal
+    command: zsh
+    networks:
+      - dev_network
+
+# Define named volumes for persistent data storage
+volumes:
+  postgres_data: # For PostgreSQL database data
+  mysql_data:    # For MySQL database data
+  bundle_data:   # For Ruby gems caching
+  editor_dotfiles: # For editor configurations and dotfiles
+
+# Define a custom network for inter-service communication
+networks:
+  dev_network:
+    driver: bridge # Use a default bridge network
+
