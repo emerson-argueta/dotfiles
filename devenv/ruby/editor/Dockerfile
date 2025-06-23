@@ -60,9 +60,6 @@ RUN wget https://github.com/postmodern/chruby/releases/download/v0.3.9/chruby-0.
   make install
 
 
-RUN echo 'source /usr/local/share/chruby/chruby.sh' >> /home/editor/.zshrc && \
-    echo 'source /usr/local/share/chruby/auto.sh' >> /home/editor/.zshrc
-
 # IMPORTANT: Set the default shell for subsequent RUN commands and CMD here,
 # ensuring .zshrc is sourced and chruby is initialized correctly.
 SHELL ["/bin/zsh", "-lc"]
@@ -72,18 +69,11 @@ SHELL ["/bin/zsh", "-lc"]
 RUN ruby-install ruby-3.3.2
 # --- End chruby and ruby-install Installation ---
 
-
-# --- Powerlevel10k Installation (manual setup as per user's snippet) ---
-RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k && \
-    echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc
-# --- End Powerlevel10k Installation ---
-
-RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
 # Configure Git with a default user name and email
 # You can change these values after connecting to the container if needed.
 RUN git config --global user.name "Your Name" && \
     git config --global user.email "you@example.com"
+
 
 # --- Nerd Fonts Installation ---
 # Create a directory for Nerd Fonts
@@ -91,7 +81,6 @@ USER root
 RUN mkdir -p /usr/local/share/fonts/truetype/nerdfonts && \
     # Download Iosevka Term SS09 Nerd Font (a popular variant with ligatures)
     # This URL points to a specific release from the Nerd Fonts GitHub repository.
-    
     wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/Iosevka.zip -O /tmp/Iosevka.zip && \
     # Unzip the font files into the fonts directory
     unzip -o /tmp/Iosevka.zip -d /usr/local/share/fonts/truetype/nerdfonts && \
@@ -102,28 +91,46 @@ RUN mkdir -p /usr/local/share/fonts/truetype/nerdfonts && \
 # --- End Nerd Fonts Installation ---
 
 
-# --- neovim Installation ---
+# --- Neovim and Homebrew Installation ---
+# Create linuxbrew user for Homebrew installation as per Homebrew's recommendations
+USER root
 RUN useradd -m -s /bin/zsh linuxbrew && \
-    usermod -aG sudo linuxbrew &&  \
+    usermod -aG sudo linuxbrew && \
     mkdir -p /home/linuxbrew/.linuxbrew && \
     chown -R linuxbrew: /home/linuxbrew/.linuxbrew
-USER linuxbrew
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-USER root
-RUN chown -R $CONTAINER_USER: /home/linuxbrew/.linuxbrew
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
+# Switch to linuxbrew user to install Homebrew
+USER linuxbrew
+ENV HOME /home/linuxbrew
+ENV HOMEBREW_INSTALL_FROM_API=1
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 RUN git config --global --add safe.directory /home/linuxbrew/.linuxbrew/Homebrew
+
+# Switch back to root to set global PATH and install common tools for any user
+USER root
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+ENV HOMEBREW_NO_INSTALL_CLEANUP=1
+ENV HOMEBREW_NO_AUTO_UPDATE=1
+
+# --- Powerlevel10k Installation ---
+# Install Powerlevel10k for the 'editor' user
+USER linuxbrew
+RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /home/linuxbrew/.powerlevel10k && \
+    echo 'source /home/linuxbrew/.powerlevel10k/powerlevel10k.zsh-theme' >> /home/linuxbrew/.zshrc
+# --- End Powerlevel10k Installation ---
+
+# Configure tmux plugin manager for user
+RUN git clone https://github.com/tmux-plugins/tpm /home/linuxbrew/.tmux/plugins/tpm
+
+# Ensure chruby is sourced in the user's .zshrc
+# This needs to be done under the  user's context
+RUN echo 'source /usr/local/share/chruby/chruby.sh' >> /home/linuxbrew/.zshrc && \
+    echo 'source /usr/local/share/chruby/auto.sh' >> /home/linuxbrew/.zshrc
+
+# Correct permission issue for Homebrew directory so 'editor' user can execute brew commands
 USER linuxbrew
 RUN brew update
 RUN brew install neovim
-
-
-USER editor
-ENV HOME /home/editor
-WORKDIR /home/editor/app
-# RUN chruby ruby-3.3.2
-# -- end neovim Installation ---
 
 # Install foreman as a global gem.
 # This is installed after Ruby is set up by chruby.
@@ -135,4 +142,3 @@ EXPOSE 3000
 # Default command to run when the container starts.
 # 'zsh' will launch an interactive zsh shell from which the user can create and run a Rails project.
 CMD ["zsh"]
-
