@@ -45,14 +45,14 @@ services:
   editor:
     # Build the editor image using the Dockerfile in ./editor
     build:
-      context: ~/development/dotfiles/devenv/ruby/editor
+      context: ./editor 
       dockerfile: Dockerfile
     volumes:
       # Mount the Rails application directory, allowing you to edit the code from within the editor container
-      - .:/root/app
+      - ~/development/personal/rails_workspace:/home/editor/app
       # Persistent volume for editor dotfiles (e.g., Neovim config, .zshrc, .p10k.zsh).
       # This ensures your editor configuration persists across container restarts.
-      - ~/development/dotfiles:/root/.config
+      - ~/development/dotfiles:/home/editor/.config
     # Keep stdin open and allocate a TTY, crucial for an interactive shell experience
     stdin_open: true # Equivalent to `docker run -i`
     tty: true        # Equivalent to `docker run -t`

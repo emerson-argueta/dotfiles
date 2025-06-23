@@ -2,10 +2,10 @@ FROM ubuntu:24.04
 
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
-ENV HOME /root 
 
-# Set the working directory inside the container to the application root
-WORKDIR /app
+# Create the 'editor' user and set their home directory
+RUN useradd -m -s /bin/zsh editor && \
+    usermod -aG sudo editor # Add editor to sudo group if needed for installations
 
 # Install essential tools and dependencies:
 # build-essential (for compiling tools), git, curl, zsh, tmux, python3-pip,
@@ -42,11 +42,9 @@ RUN apt-get update && \
     nodejs \
     npm \
     yarn \
-    neovim \
     --no-install-recommends && \
     # Clean up APT cache to reduce image size
     rm -rf /var/lib/apt/lists/*
-
 
 # --- chruby and ruby-install Installation ---
 # Install ruby-install (often used with chruby to install Ruby versions)
@@ -61,8 +59,9 @@ RUN wget https://github.com/postmodern/chruby/releases/download/v0.3.9/chruby-0.
   cd chruby-0.3.9/ && \
   make install
 
-RUN echo 'source /usr/local/share/chruby/chruby.sh' >> ~/.zshrc && \
-    echo 'source /usr/local/share/chruby/auto.sh' >> ~/.zshrc
+
+RUN echo 'source /usr/local/share/chruby/chruby.sh' >> /home/editor/.zshrc && \
+    echo 'source /usr/local/share/chruby/auto.sh' >> /home/editor/.zshrc
 
 # IMPORTANT: Set the default shell for subsequent RUN commands and CMD here,
 # ensuring .zshrc is sourced and chruby is initialized correctly.
@@ -88,6 +87,7 @@ RUN git config --global user.name "Your Name" && \
 
 # --- Nerd Fonts Installation ---
 # Create a directory for Nerd Fonts
+USER root
 RUN mkdir -p /usr/local/share/fonts/truetype/nerdfonts && \
     # Download Iosevka Term SS09 Nerd Font (a popular variant with ligatures)
     # This URL points to a specific release from the Nerd Fonts GitHub repository.
@@ -100,6 +100,30 @@ RUN mkdir -p /usr/local/share/fonts/truetype/nerdfonts && \
     # Update the font cache to register the new fonts
     fc-cache -fv
 # --- End Nerd Fonts Installation ---
+
+
+# --- neovim Installation ---
+RUN useradd -m -s /bin/zsh linuxbrew && \
+    usermod -aG sudo linuxbrew &&  \
+    mkdir -p /home/linuxbrew/.linuxbrew && \
+    chown -R linuxbrew: /home/linuxbrew/.linuxbrew
+USER linuxbrew
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+USER root
+RUN chown -R $CONTAINER_USER: /home/linuxbrew/.linuxbrew
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
+RUN git config --global --add safe.directory /home/linuxbrew/.linuxbrew/Homebrew
+USER linuxbrew
+RUN brew update
+RUN brew install neovim
+
+
+USER editor
+ENV HOME /home/editor
+WORKDIR /home/editor/app
+# RUN chruby ruby-3.3.2
+# -- end neovim Installation ---
 
 # Install foreman as a global gem.
 # This is installed after Ruby is set up by chruby.
